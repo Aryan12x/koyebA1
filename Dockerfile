@@ -1,21 +1,29 @@
-# Python environment
+# Base image
 FROM python:3.9-slim
+
+# Install required OS packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libffi-dev \
+    libssl-dev \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
 # Working directory
 WORKDIR /app
 
-# Install dependencies
+# Copy dependencies
 COPY requirements.txt .
+
+# Install Python packages
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all project files including main.py, questions.json, etc.
+# Copy all project files (main.py, jsons etc.)
 COPY . .
 
-# Set environment variable (Koyeb sets TELEGRAM_BOT_TOKEN & PORT automatically)
+# Default port
 ENV PORT=8080
-
-# Expose the port for Flask
 EXPOSE 8080
 
-# Run the bot
+# Start the bot
 CMD ["python", "main.py"]
